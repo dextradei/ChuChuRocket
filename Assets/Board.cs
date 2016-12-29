@@ -2,44 +2,47 @@
 using System.Collections;
 
 public class Board : MonoBehaviour {
+    [HideInInspector]
 	public bool[] HorizontalWalls;
-	public bool[] VerticalWalls;
+    [HideInInspector]
+    public bool[] VerticalWalls;
 
 	public GameObject HorizontalWall;
 	public GameObject VerticalWall;
 
+    [HideInInspector]
 	public int Width = 16;
+    [HideInInspector]
 	public int Height = 16;
 
 	// Use this for initialization
 	void Start () {
-		int max = (Width + 1) * (Height + 1);
-
-		int w = Width + 1;
-		for(int index = 0; index < max; index++) {
-			int x = index % w;
-			int y = index / w;
-			//Debug.Log ("x,y" + x + "," + y);
-			if ((y == 0) || (y == 16)) {
-				HorizontalWalls[index] = true;
-			}
-			if ((x == 0) || (x == 16)) {
-				VerticalWalls[index] = true;
-			}
-
-			if (HorizontalWalls[index] && (x < 16)) {
-                //Debug.Log ("x,y" + x + "," + y);
-                //Instantiate (HorizontalWall, new Vector3((float)x, (float)y, 0f), Quaternion.identity, transform.parent);
-                GameObject wall = Instantiate(HorizontalWall, transform.parent);
-                wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-			}
-			if (VerticalWalls[index] && (y < 16)) {
-                //Debug.Log ("x,y" + x + "," + y);
-                //Instantiate (VerticalWall, new Vector3((float)x, (float)y, 0f), Quaternion.identity, transform.parent);
-                GameObject wall = Instantiate(VerticalWall, transform.parent);
-                wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+        //Horizontal Walls
+        for(int y = 0; y < Height + 1; y++)
+        {
+            for(int x = 0; x < Width; x++)
+            {
+                int index = (y * (Width)) + x;
+                if (HorizontalWalls[index])
+                {
+                    GameObject wall = Instantiate(HorizontalWall, transform.parent);
+                    wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+                }
             }
-		}
+        }
+        //Vertical Walls
+        for(int y = 0; y < Height; y++)
+        {
+            for(int x = 0; x < Width + 1; x++)
+            {
+                int index = (y * (Width + 1)) + x;
+                if (VerticalWalls[index])
+                {
+                    GameObject wall = Instantiate(VerticalWall, transform.parent);
+                    wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+                }
+            }
+        }
 
 	}
 	

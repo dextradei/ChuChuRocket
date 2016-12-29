@@ -5,20 +5,46 @@ using UnityEditor;
 
 [CustomEditor(typeof(Board))]
 public class BoardEdit : Editor {
+    SerializedProperty HeightProp;
+    SerializedProperty WidthProp;
     SerializedProperty HorizontalWallsProp;
     SerializedProperty VerticalWallsProp;
 
     void OnEnable()
     {
+        WidthProp = serializedObject.FindProperty("Width");
+        HeightProp = serializedObject.FindProperty("Height");
         HorizontalWallsProp = serializedObject.FindProperty("HorizontalWalls");
         VerticalWallsProp = serializedObject.FindProperty("VerticalWalls");
     }
     public override void OnInspectorGUI()
     {
-        int Width = serializedObject.FindProperty("Width").intValue;
-        int Height = serializedObject.FindProperty("Height").intValue;
-
         serializedObject.Update();
+
+        DrawDefaultInspector();
+
+        EditorGUILayout.BeginVertical();
+
+        int Width = WidthProp.intValue;
+        int Height = HeightProp.intValue;
+
+        WidthProp.intValue = EditorGUILayout.IntField("Width", Width);
+        HeightProp.intValue = EditorGUILayout.IntField("Height", Height);
+
+        EditorGUILayout.EndVertical();
+
+        if (((WidthProp.intValue != Width) || (HeightProp.intValue != Height)) && (WidthProp.intValue > 0) && (HeightProp.intValue > 0))
+        {
+            //resize HorizontalWalls and VerticalWalls arrays
+            Debug.Log("Resizing array");
+            Width = WidthProp.intValue;
+            Height = HeightProp.intValue;
+            HorizontalWallsProp.arraySize = Width * (Height + 1);
+            VerticalWallsProp.arraySize = (Width + 1) * Height;
+
+        }
+
+        if ((Height < 1) || (Width < 1)) return;
 
         EditorGUILayout.BeginVertical();
         for (int y = 0; y < Height + 1; y++)
@@ -30,7 +56,7 @@ public class BoardEdit : Editor {
             EditorGUILayout.Space();
             for (int x = 0; x < Width; x++)
             {
-                int i = ((Height - y) * (Width + 1)) + x;
+                int i = ((Height - y) * Width) + x;
                 //Debug.Log("x: " + x + ", y: " + y + ", i: " + i);
                 SerializedProperty prop = HorizontalWallsProp.GetArrayElementAtIndex(i);
                 prop.boolValue = EditorGUILayout.Toggle(prop.boolValue);
