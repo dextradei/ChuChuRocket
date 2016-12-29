@@ -21,8 +21,13 @@ public class BoardEdit : Editor {
     {
         serializedObject.Update();
 
+        //Draw exposed properties
         DrawDefaultInspector();
 
+        //Draw custom properties
+
+        //Allow resizing of grid height/width
+        //TODO: auto resizing of board graphics, currently static image of 16x16 squares
         EditorGUILayout.BeginVertical();
 
         int Width = WidthProp.intValue;
@@ -33,19 +38,24 @@ public class BoardEdit : Editor {
 
         EditorGUILayout.EndVertical();
 
+        //if the size changed and the new size is valid, resize the arrays
         if (((WidthProp.intValue != Width) || (HeightProp.intValue != Height)) && (WidthProp.intValue > 0) && (HeightProp.intValue > 0))
         {
             //resize HorizontalWalls and VerticalWalls arrays
             Debug.Log("Resizing array");
             Width = WidthProp.intValue;
             Height = HeightProp.intValue;
+            //HorizontalWalls array is taller than the board by 1.  If we're keeping track of the wall below each square, need an extra row for the top row of walls
             HorizontalWallsProp.arraySize = Width * (Height + 1);
+            //VerticalWalls array is wider than the board by 1.
             VerticalWallsProp.arraySize = (Width + 1) * Height;
 
         }
 
+        //Don't draw the grid of toggles if the size isn't valid
         if ((Height < 1) || (Width < 1)) return;
 
+        //Draw grid of toggles
         EditorGUILayout.BeginVertical();
         for (int y = 0; y < Height + 1; y++)
         {
@@ -81,39 +91,6 @@ public class BoardEdit : Editor {
             EditorGUILayout.EndHorizontal();
         }
         EditorGUILayout.EndVertical();
-        //int size;
-        //size = HorizontalWallsProp.FindPropertyRelative("Array.size").intValue;
-        /*
-        EditorGUILayout.BeginVertical();
-        
-        EditorGUILayout.LabelField(new GUIContent("Vertical Walls"));
-        for (int y = Height; y >= 0; y--)
-        {
-            EditorGUILayout.BeginHorizontal();
-            for (int x = 0; x < Width; x++)
-            {
-                int i = (y * (Width + 1)) + x;
-                SerializedProperty prop = HorizontalWallsProp.GetArrayElementAtIndex(i);
-                prop.boolValue = EditorGUILayout.Toggle(prop.boolValue);
-            }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        EditorGUILayout.LabelField(new GUIContent("Horizontal Walls"));
-        for (int y = Height - 1; y >= 0; y--)
-        {
-            EditorGUILayout.BeginHorizontal();
-            for (int x = 0; x < Width + 1; x++)
-            {
-                int i = (y * (Width + 1)) + x;
-                SerializedProperty prop = VerticalWallsProp.GetArrayElementAtIndex(i);
-                prop.boolValue = EditorGUILayout.Toggle(prop.boolValue);
-            }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        EditorGUILayout.EndVertical();
-        */
 
         serializedObject.ApplyModifiedProperties();
     }

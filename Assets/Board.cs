@@ -45,6 +45,32 @@ public class Board : MonoBehaviour {
         }
 
 	}
+
+    public bool CanGo(int x, int y, Direction direction)
+    {
+        bool ret = true;
+        //add 1 for up and right
+        switch (direction)
+        {
+            case Direction.Up:
+                if (HorizontalWalls[((y + 1) * Width) + x])
+                    ret = false;
+                break;
+            case Direction.Right:
+                if (VerticalWalls[(y * (Width + 1)) + (x + 1)])
+                    ret = false;
+                break;
+            case Direction.Down:
+                if (HorizontalWalls[(y * Width) + x])
+                    ret = false;
+                break;
+            case Direction.Left:
+                if (VerticalWalls[(y * (Width + 1)) + x])
+                    ret = false;
+                break;
+        }
+        return ret;
+    }
 	
 	// Update is called once per frame
 	void Update () {
