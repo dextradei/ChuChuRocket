@@ -15,6 +15,8 @@ public class Board : MonoBehaviour {
     [HideInInspector]
 	public int Height = 16;
 
+    public GameObject MousePrefab;
+
 	// Use this for initialization
 	void Start () {
         //Horizontal Walls
@@ -44,7 +46,20 @@ public class Board : MonoBehaviour {
             }
         }
 
+        //Test
+        AddMouse(2, 2, Direction.Up);
+        AddMouse(2, 3, Direction.Right);
+        AddMouse(5, 5, Direction.Left);
+        AddMouse(10, 4, Direction.Down);
 	}
+
+    public void AddMouse(int x, int y, Direction direction)
+    {
+        GameObject o = Instantiate(MousePrefab, transform.parent);
+        o.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+        o.GetComponent<Mouse>().board = gameObject;
+        o.GetComponent<Mouse>().direction = direction;
+    }
 
     public bool CanGo(int x, int y, Direction direction)
     {

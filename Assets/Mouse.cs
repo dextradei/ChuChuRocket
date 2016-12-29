@@ -8,7 +8,7 @@ public class Mouse : MonoBehaviour {
 	public int velocity;
     public GameObject MouseImage;
 
-	private Direction direction = Direction.Up;
+	public Direction direction = Direction.Up;
 
     private float startMoveTime;
     private Vector3 destination;
