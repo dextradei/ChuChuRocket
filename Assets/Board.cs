@@ -7,6 +7,8 @@ public class Board : MonoBehaviour {
     [HideInInspector]
     public bool[] VerticalWalls;
 
+    public int MouseLimit;
+
 	public GameObject HorizontalWall;
 	public GameObject VerticalWall;
 
@@ -17,8 +19,12 @@ public class Board : MonoBehaviour {
 
     public GameObject MousePrefab;
 
+    [System.NonSerialized]
+    private int mouseCount;
+
 	// Use this for initialization
 	void Start () {
+        mouseCount = 0;
         //Horizontal Walls
         for(int y = 0; y < Height + 1; y++)
         {
@@ -57,10 +63,19 @@ public class Board : MonoBehaviour {
 
     public void AddMouse(int x, int y, Direction direction)
     {
+        if (mouseCount >= MouseLimit)
+            return;
         GameObject o = Instantiate(MousePrefab, transform.parent);
         o.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-        o.GetComponent<Mouse>().board = gameObject;
+        o.GetComponent<Mouse>().BoardObject = gameObject;
         o.GetComponent<Mouse>().direction = direction;
+        mouseCount++;
+    }
+
+    public void RemoveMouse(GameObject mouse)
+    {
+        Destroy(mouse);
+        mouseCount--;
     }
 
     public bool CanGo(int x, int y, Direction direction)

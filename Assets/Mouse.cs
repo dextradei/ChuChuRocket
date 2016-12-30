@@ -14,10 +14,18 @@ public class Mouse : MonoBehaviour {
     private Vector3 destination;
     private Vector3 position;
 
-    public GameObject board;
-    
+    public GameObject BoardObject;
+    private Board board;
+
+    //temporary?
+    public float lifeTime;
+    private float startTime;
+    //end temporary
+
 	// Use this for initialization
 	void Start () {
+        startTime = Time.time;
+        board = BoardObject.GetComponent<Board>();
         //make sure we're centered
         position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
         transform.localPosition = position;
@@ -27,6 +35,14 @@ public class Mouse : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //temporary?
+        //make mice have limited life time
+        if (Time.time - startTime > lifeTime)
+        {
+            board.RemoveMouse(gameObject);
+            return;
+        }
+        //end temporary
 		if (Vector3.Distance(transform.localPosition, destination) < (velocity * Time.deltaTime))
         {
             startMoveTime = Time.time;
@@ -46,7 +62,7 @@ public class Mouse : MonoBehaviour {
         //Only try 4 times and then give up with error.
         for(i = 0; i < 4; i++)
         {
-            if (!board.GetComponent<Board>().CanGo(x, y, direction))
+            if (!board.CanGo(x, y, direction))
             {
                 //Debug.Log("Turn x,y: " + x + "," + y);
                 Turn();
