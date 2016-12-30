@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 
 public class Board : MonoBehaviour {
@@ -22,10 +23,13 @@ public class Board : MonoBehaviour {
     [System.NonSerialized]
     private int mouseCount;
 
+    [System.NonSerialized]
+    private Dictionary<int, MouseTrap> mouseTraps = new Dictionary<int, MouseTrap>();
+
 	// Use this for initialization
 	void Start () {
         mouseCount = 0;
-        //Horizontal Walls
+        //Build Horizontal Walls
         for(int y = 0; y < Height + 1; y++)
         {
             for(int x = 0; x < Width; x++)
@@ -38,7 +42,7 @@ public class Board : MonoBehaviour {
                 }
             }
         }
-        //Vertical Walls
+        //Build Vertical Walls
         for(int y = 0; y < Height; y++)
         {
             for(int x = 0; x < Width + 1; x++)
@@ -51,6 +55,13 @@ public class Board : MonoBehaviour {
                 }
             }
         }
+        //Index Mouse Traps
+        MouseTrap[] traps = transform.parent.GetComponentsInChildren<MouseTrap>();
+        foreach (MouseTrap trap in traps)
+        {
+            int index = (Mathf.RoundToInt(trap.position.y) * Width) + Mathf.RoundToInt(trap.position.x);
+            mouseTraps.Add(index, trap);
+        }
 
         //Test
         /*
@@ -60,6 +71,15 @@ public class Board : MonoBehaviour {
         AddMouse(10, 4, Direction.Down);
         */
 	}
+
+    public MouseTrap GetTrap(int x, int y)
+    {
+        MouseTrap ret;
+        int index = (y * Width) + x;
+        if (!mouseTraps.TryGetValue(index, out ret))
+            ret = null;
+        return ret;
+    }
 
     public void AddMouse(int x, int y, Direction direction)
     {

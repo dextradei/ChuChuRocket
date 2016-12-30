@@ -48,10 +48,27 @@ public class Mouse : MonoBehaviour {
             startMoveTime = Time.time;
             transform.localPosition = destination;
             position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
-            SetDestination();
+            if (!Trapped())
+                SetDestination();
         }
         transform.localPosition = Vector3.Lerp(position, destination, (Time.time - startMoveTime) * velocity);
 	}
+
+    bool Trapped()
+    {
+        int x = Mathf.RoundToInt(position.x);
+        int y = Mathf.RoundToInt(position.y);
+        //if we're on a trap, remove the mouse
+        MouseTrap trap = board.GetTrap(x, y);
+        if (trap != null)
+        {
+            //mouse hit a trap
+            //TODO: figure out which player owns the trap and update score
+            board.RemoveMouse(gameObject);
+            return true;
+        }
+        return false;
+    }
 
     void SetDestination()
     {
@@ -77,6 +94,7 @@ public class Mouse : MonoBehaviour {
             destination = position;
             return;
         }
+        
         SetRotation();
         switch (direction)
         {
