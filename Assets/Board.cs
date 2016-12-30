@@ -47,10 +47,12 @@ public class Board : MonoBehaviour {
         }
 
         //Test
+        /*
         AddMouse(2, 2, Direction.Up);
         AddMouse(2, 3, Direction.Right);
         AddMouse(5, 5, Direction.Left);
         AddMouse(10, 4, Direction.Down);
+        */
 	}
 
     public void AddMouse(int x, int y, Direction direction)
