@@ -87,7 +87,6 @@ public class Board : MonoBehaviour {
             return;
         GameObject o = Instantiate(MousePrefab, transform.parent);
         o.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-        o.GetComponent<Mouse>().BoardObject = gameObject;
         o.GetComponent<Mouse>().direction = direction;
         mouseCount++;
     }
