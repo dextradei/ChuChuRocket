@@ -17,7 +17,7 @@ public class Mouse : MonoBehaviour {
 
 	public float lifeTime;
 	private float startTime;
-	
+
 	void Start () {
 		startTime = Time.time;
 		board = GameObject.FindWithTag("Board").GetComponent<Board>();
