@@ -18,20 +18,6 @@ public class Board : MonoBehaviour {
 	public GameObject horizontalWallPrefab;
 	public GameObject verticalWallPrefab;
 
-	public GameObject mousePrefab;
-
-	public GameObject selectorPrefab;
-	private GameObject selector = null;
-
-	public GameObject arrowPrefab;
-
-	//maximum number of mice before AddMouse() will stop adding and become a no-op
-	public int mouseLimit;
-	private int mouseCount;
-
-	//Keep an index of (x,y) position -> MouseTrap/MouseSpawner/etc so we can quickly get the object at (x,y)
-	private Dictionary<int, GameObject> boardPieces = new Dictionary<int, GameObject>();
-
 	//every game piece needs to be a child of the GameArea so that (x,y) corresponds to a spot on the board
 	private Transform gameArea;
 
@@ -39,7 +25,6 @@ public class Board : MonoBehaviour {
 	{
 		gameArea = GameObject.FindGameObjectWithTag("GameArea").transform;
 
-		mouseCount = 0;
 		//Build Horizontal Walls
 		for (int y = 0; y < Height + 1; y++)
 		{
@@ -66,47 +51,7 @@ public class Board : MonoBehaviour {
 				}
 			}
 		}
-		//Index MouseTraps
-		MouseTrap[] traps = gameArea.GetComponentsInChildren<MouseTrap>();
-		foreach (MouseTrap trap in traps)
-		{
-			int index = (Mathf.RoundToInt(trap.position.y) * Width) + Mathf.RoundToInt(trap.position.x);
-			boardPieces.Add(index, trap.gameObject);
-		}
-		MouseSpawner[] spawners = gameArea.GetComponentsInChildren<MouseSpawner>();
-		foreach (MouseSpawner spawner in spawners)
-		{
-			int index = (Mathf.RoundToInt(spawner.position.y) * Width) + Mathf.RoundToInt(spawner.position.x);
-			boardPieces.Add(index, spawner.gameObject);
-		}
-	}
-
-	//Get the game piece at position (x,y) or return null if there isn't one
-	public GameObject GetPiece(int x, int y)
-	{
-		GameObject ret;
-		int index = (y * Width) + x;
-		if (!boardPieces.TryGetValue(index, out ret))
-			ret = null;
-		return ret;
-	}
-
-	//Create a mouse at (x,y) that moves direction
-	public void AddMouse(int x, int y, Direction direction)
-	{
-		if (mouseCount >= mouseLimit)
-			return;
-		GameObject mouse = Instantiate(mousePrefab, gameArea);
-		mouse.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-		mouse.GetComponent<Mouse>().direction = direction;
-		mouseCount++;
-	}
-
-	//Remove a mouse
-	public void RemoveMouse(GameObject mouse)
-	{
-		Destroy(mouse);
-		mouseCount--;
+		
 	}
 
 	//Can a mouse at (x,y) move direction?
@@ -135,53 +80,25 @@ public class Board : MonoBehaviour {
 		}
 		return ret;
 	}
+
+	public bool OnBoard(int x, int y)
+	{
+		return ((x >= 0) && (x < Width) && (y >= 0) && (y < Height));
+	}
 	
+	public int GetIndex(int x, int y)
+	{
+		return y * Width + x;
+	}
+
+	public int GetIndex(Vector3 v)
+	{
+		return (Mathf.RoundToInt(v.y) * Width) + Mathf.RoundToInt(v.x);
+	}
 	// Update is called once per frame
 	void Update () {
-		//detect mouse position on board
-		Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		worldPoint.z = 0f;
-		Vector3 boardPoint = gameArea.InverseTransformPoint(worldPoint);
 
-		//find what square this point is on
-		int x = Mathf.FloorToInt(boardPoint.x);
-		int y = Mathf.FloorToInt(boardPoint.y);
-
-		//if it's a valid place to put an arrow, put the highlighter there
-		if ((x >= 0) && (x < Width) && (y >= 0) && (y < Height) && (GetPiece(x, y) == null))
-		{
-			MoveSelector(x, y);
-			//TODO: fix project input settings and use Axes instead of GetKey
-			if (Input.GetKey(KeyCode.W))
-			{
-				//place an up arrow
-				GameObject arrow = Instantiate(arrowPrefab, gameArea);
-				arrow.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-				arrow.GetComponent<Arrow>().direction = Direction.Up;
-				int index = (y * (Width)) + x;
-				boardPieces.Add(index, arrow);
-			}
-		}
-		else
-		{
-			RemoveSelector();
-		}
 	}
-
-	void MoveSelector(int x, int y)
-	{
-		if (selector == null)
-			selector = Instantiate(selectorPrefab, gameArea);
-		selector.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-	}
-
-	void RemoveSelector()
-	{
-		if (selector != null)
-		{
-			Destroy(selector);
-			selector = null;
-		}
-	}
+	
 	
 }

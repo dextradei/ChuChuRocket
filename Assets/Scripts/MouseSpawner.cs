@@ -7,7 +7,7 @@ public class MouseSpawner : MonoBehaviour {
 	public float frequency;
 	public Direction direction;
 
-	private Board board;
+	private GameController controller;
 
 	private float startTime;
 	[System.NonSerialized]
@@ -22,7 +22,7 @@ public class MouseSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		board = GameObject.FindWithTag("Board").GetComponent<Board>();
+		controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		startTime = Time.time;
 	}
 	
@@ -31,7 +31,7 @@ public class MouseSpawner : MonoBehaviour {
 		float sec = 1f / frequency;
 		if (Time.time - startTime > sec)
 		{
-			board.AddMouse(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y), direction);
+			controller.AddMouse(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y), direction);
 			startTime = Time.time;
 		}
 	}

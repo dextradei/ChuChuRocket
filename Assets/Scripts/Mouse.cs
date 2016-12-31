@@ -13,14 +13,14 @@ public class Mouse : MonoBehaviour {
 	private Vector3 destination;
 	private Vector3 position;
 
-	private Board board;
+	private GameController controller;
 
 	public float lifeTime;
 	private float startTime;
 
 	void Start () {
 		startTime = Time.time;
-		board = GameObject.FindWithTag("Board").GetComponent<Board>();
+		controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		//make sure we're centered
 		SetPosition();
 		transform.localPosition = position;
@@ -33,7 +33,7 @@ public class Mouse : MonoBehaviour {
 		//make mice have limited life time
 		if (Time.time - startTime > lifeTime)
 		{
-			board.RemoveMouse(gameObject);
+			controller.RemoveMouse(gameObject);
 			return;
 		}
 
@@ -44,14 +44,14 @@ public class Mouse : MonoBehaviour {
 			int x = Mathf.RoundToInt(position.x);
 			int y = Mathf.RoundToInt(position.y);
 			//if we hit a trap, remove the mouse.  else if we hit an arrow, change direction
-			GameObject piece = board.GetPiece(x, y);
+			GameObject piece = controller.GetPiece(x, y);
 			if (piece != null)
 			{
 				MouseTrap trap = piece.GetComponent<MouseTrap>();
 				if (trap != null)
 				{
 					//TODO: figure out which player owns the trap and update score
-					board.RemoveMouse(gameObject);
+					controller.RemoveMouse(gameObject);
 					return;
 				}
 				Arrow arrow = piece.GetComponent<Arrow>();
@@ -83,7 +83,7 @@ public class Mouse : MonoBehaviour {
 		//Only try 4 times and then give up with error.
 		for(i = 0; i < 4; i++)
 		{
-			if (!board.CanGo(x, y, direction))
+			if (!controller.CanGo(x, y, direction))
 			{
 				//Debug.Log("Turn x,y: " + x + "," + y);
 				Turn();
