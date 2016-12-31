@@ -14,7 +14,6 @@ public class Mouse : MonoBehaviour {
     private Vector3 destination;
     private Vector3 position;
 
-    public GameObject BoardObject;
     private Board board;
 
     //temporary?
@@ -25,7 +24,7 @@ public class Mouse : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         startTime = Time.time;
-        board = BoardObject.GetComponent<Board>();
+        board = GameObject.FindWithTag("Board").GetComponent<Board>();
         //make sure we're centered
         position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
         transform.localPosition = position;
@@ -46,7 +45,7 @@ public class Mouse : MonoBehaviour {
 		if (Vector3.Distance(transform.localPosition, destination) < (velocity * Time.deltaTime))
         {
             startMoveTime = Time.time;
-            transform.localPosition = destination;
+            //transform.localPosition = destination;
             position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
             if (!Trapped())
                 SetDestination();

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MouseSpawner : MonoBehaviour {
 
-    public GameObject BoardObject;
     public float frequency;
     public Direction direction;
 
@@ -15,7 +14,7 @@ public class MouseSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        board = BoardObject.GetComponent<Board>();
+        board = GameObject.FindWithTag("Board").GetComponent<Board>();
         startTime = Time.time;
         //Make sure we're centered
         position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
