@@ -41,11 +41,24 @@ public class Mouse : MonoBehaviour {
 		if (Vector3.Distance(transform.localPosition, destination) <= (velocity * Time.deltaTime) / 2f)
 		{
 			SetPosition();
-			if (Trapped())
+			int x = Mathf.RoundToInt(position.x);
+			int y = Mathf.RoundToInt(position.y);
+			//if we hit a trap, remove the mouse.  else if we hit an arrow, change direction
+			GameObject piece = board.GetPiece(x, y);
+			if (piece != null)
 			{
-				//TODO: figure out which player owns the trap and update score
-				board.RemoveMouse(gameObject);
-				return;
+				MouseTrap trap = piece.GetComponent<MouseTrap>();
+				if (trap != null)
+				{
+					//TODO: figure out which player owns the trap and update score
+					board.RemoveMouse(gameObject);
+					return;
+				}
+				Arrow arrow = piece.GetComponent<Arrow>();
+				if (arrow != null)
+				{
+					direction = arrow.direction;
+				}
 			}
 			//set a new destination and start moving to it
 			startMoveTime = Time.time;
@@ -60,15 +73,7 @@ public class Mouse : MonoBehaviour {
 		//position is the nearest grid point to current location
 		position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
 	}
-
-	bool Trapped()
-	{
-		int x = Mathf.RoundToInt(position.x);
-		int y = Mathf.RoundToInt(position.y);
-		MouseTrap trap = board.GetTrap(x, y);
-		return (trap != null);
-	}
-
+	
 	void SetDestination()
 	{
 		int x = Mathf.RoundToInt(position.x);

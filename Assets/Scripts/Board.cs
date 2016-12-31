@@ -20,20 +20,25 @@ public class Board : MonoBehaviour {
 
 	public GameObject mousePrefab;
 
+	public GameObject selectorPrefab;
+	private GameObject selector = null;
+
+	public GameObject arrowPrefab;
+
 	//maximum number of mice before AddMouse() will stop adding and become a no-op
 	public int mouseLimit;
 	private int mouseCount;
 
-	//Keep an index of (x,y) position -> MouseTrap so we can quickly get the MouseTrap object at (x,y) if there is one
-	private Dictionary<int, MouseTrap> mouseTraps = new Dictionary<int, MouseTrap>();
+	//Keep an index of (x,y) position -> MouseTrap/MouseSpawner/etc so we can quickly get the object at (x,y)
+	private Dictionary<int, GameObject> boardPieces = new Dictionary<int, GameObject>();
 
-	// Use this for initialization
-	void Start () {
+	void Start()
+	{
 		mouseCount = 0;
 		//Build Horizontal Walls
-		for(int y = 0; y < Height + 1; y++)
+		for (int y = 0; y < Height + 1; y++)
 		{
-			for(int x = 0; x < Width; x++)
+			for (int x = 0; x < Width; x++)
 			{
 				int index = (y * (Width)) + x;
 				if (HorizontalWalls[index])
@@ -44,9 +49,9 @@ public class Board : MonoBehaviour {
 			}
 		}
 		//Build Vertical Walls
-		for(int y = 0; y < Height; y++)
+		for (int y = 0; y < Height; y++)
 		{
-			for(int x = 0; x < Width + 1; x++)
+			for (int x = 0; x < Width + 1; x++)
 			{
 				int index = (y * (Width + 1)) + x;
 				if (VerticalWalls[index])
@@ -61,17 +66,22 @@ public class Board : MonoBehaviour {
 		foreach (MouseTrap trap in traps)
 		{
 			int index = (Mathf.RoundToInt(trap.position.y) * Width) + Mathf.RoundToInt(trap.position.x);
-			mouseTraps.Add(index, trap);
+			boardPieces.Add(index, trap.gameObject);
 		}
-		
+		MouseSpawner[] spawners = transform.parent.GetComponentsInChildren<MouseSpawner>();
+		foreach (MouseSpawner spawner in spawners)
+		{
+			int index = (Mathf.RoundToInt(spawner.position.y) * Width) + Mathf.RoundToInt(spawner.position.x);
+			boardPieces.Add(index, spawner.gameObject);
+		}
 	}
 
-	//Get the MouseTrap at position (x,y) or return null if there isn't one
-	public MouseTrap GetTrap(int x, int y)
+	//Get the game piece at position (x,y) or return null if there isn't one
+	public GameObject GetPiece(int x, int y)
 	{
-		MouseTrap ret;
+		GameObject ret;
 		int index = (y * Width) + x;
-		if (!mouseTraps.TryGetValue(index, out ret))
+		if (!boardPieces.TryGetValue(index, out ret))
 			ret = null;
 		return ret;
 	}
@@ -123,7 +133,50 @@ public class Board : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		//detect mouse position on board
+		Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		worldPoint.z = 0f;
+		Vector3 boardPoint = transform.parent.InverseTransformPoint(worldPoint);
+
+		//find what square this point is on
+		int x = Mathf.FloorToInt(boardPoint.x);
+		int y = Mathf.FloorToInt(boardPoint.y);
+
+		//if it's a valid place to put an arrow, put the highlighter there
+		if ((x >= 0) && (x < Width) && (y >= 0) && (y < Height) && (GetPiece(x, y) == null))
+		{
+			MoveSelector(x, y);
+			//TODO: fix project input settings and use Axes instead of GetKey
+			if (Input.GetKey(KeyCode.W))
+			{
+				//place an up arrow
+				GameObject arrow = Instantiate(arrowPrefab, transform.parent);
+				arrow.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+				arrow.GetComponent<Arrow>().direction = Direction.Up;
+				int index = (y * (Width)) + x;
+				boardPieces.Add(index, arrow);
+			}
+		}
+		else
+		{
+			RemoveSelector();
+		}
+	}
+
+	void MoveSelector(int x, int y)
+	{
+		if (selector == null)
+			selector = Instantiate(selectorPrefab, transform.parent);
+		selector.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+	}
+
+	void RemoveSelector()
+	{
+		if (selector != null)
+		{
+			Destroy(selector);
+			selector = null;
+		}
 	}
 	
 }

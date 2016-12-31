@@ -10,15 +10,20 @@ public class MouseSpawner : MonoBehaviour {
 	private Board board;
 
 	private float startTime;
-	private Vector3 position;
+	[System.NonSerialized]
+	public Vector3 position;
+
+	void Awake()
+	{
+		//Make sure we're centered
+		position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
+		transform.localPosition = position;
+	}
 
 	// Use this for initialization
 	void Start () {
 		board = GameObject.FindWithTag("Board").GetComponent<Board>();
 		startTime = Time.time;
-		//Make sure we're centered
-		position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
-		transform.localPosition = position;
 	}
 	
 	// Update is called once per frame
