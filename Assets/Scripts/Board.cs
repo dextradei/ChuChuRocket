@@ -81,9 +81,9 @@ public class Board : MonoBehaviour {
 	{
 		if (mouseCount >= mouseLimit)
 			return;
-		GameObject o = Instantiate(mousePrefab, transform.parent);
-		o.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-		o.GetComponent<Mouse>().direction = direction;
+		GameObject mouse = Instantiate(mousePrefab, transform.parent);
+		mouse.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+		mouse.GetComponent<Mouse>().direction = direction;
 		mouseCount++;
 	}
 
