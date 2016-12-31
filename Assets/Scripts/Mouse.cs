@@ -17,8 +17,7 @@ public class Mouse : MonoBehaviour {
 
 	public float lifeTime;
 	private float startTime;
-
-	// Use this for initialization
+	
 	void Start () {
 		startTime = Time.time;
 		board = GameObject.FindWithTag("Board").GetComponent<Board>();
@@ -43,7 +42,11 @@ public class Mouse : MonoBehaviour {
 		{
 			SetPosition();
 			if (Trapped())
+			{
+				//TODO: figure out which player owns the trap and update score
+				board.RemoveMouse(gameObject);
 				return;
+			}
 			//set a new destination and start moving to it
 			startMoveTime = Time.time;
 			SetDestination();
@@ -62,16 +65,8 @@ public class Mouse : MonoBehaviour {
 	{
 		int x = Mathf.RoundToInt(position.x);
 		int y = Mathf.RoundToInt(position.y);
-		//if we're on a trap, remove the mouse
 		MouseTrap trap = board.GetTrap(x, y);
-		if (trap != null)
-		{
-			//mouse hit a trap
-			//TODO: figure out which player owns the trap and update score
-			board.RemoveMouse(gameObject);
-			return true;
-		}
-		return false;
+		return (trap != null);
 	}
 
 	void SetDestination()
