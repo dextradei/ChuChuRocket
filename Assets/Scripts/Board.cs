@@ -32,8 +32,13 @@ public class Board : MonoBehaviour {
 	//Keep an index of (x,y) position -> MouseTrap/MouseSpawner/etc so we can quickly get the object at (x,y)
 	private Dictionary<int, GameObject> boardPieces = new Dictionary<int, GameObject>();
 
+	//every game piece needs to be a child of the GameArea so that (x,y) corresponds to a spot on the board
+	private Transform gameArea;
+
 	void Start()
 	{
+		gameArea = GameObject.FindGameObjectWithTag("GameArea").transform;
+
 		mouseCount = 0;
 		//Build Horizontal Walls
 		for (int y = 0; y < Height + 1; y++)
@@ -43,7 +48,7 @@ public class Board : MonoBehaviour {
 				int index = (y * (Width)) + x;
 				if (HorizontalWalls[index])
 				{
-					GameObject wall = Instantiate(horizontalWallPrefab, transform.parent);
+					GameObject wall = Instantiate(horizontalWallPrefab, gameArea);
 					wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 				}
 			}
@@ -56,19 +61,19 @@ public class Board : MonoBehaviour {
 				int index = (y * (Width + 1)) + x;
 				if (VerticalWalls[index])
 				{
-					GameObject wall = Instantiate(verticalWallPrefab, transform.parent);
+					GameObject wall = Instantiate(verticalWallPrefab, gameArea);
 					wall.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 				}
 			}
 		}
 		//Index MouseTraps
-		MouseTrap[] traps = transform.parent.GetComponentsInChildren<MouseTrap>();
+		MouseTrap[] traps = gameArea.GetComponentsInChildren<MouseTrap>();
 		foreach (MouseTrap trap in traps)
 		{
 			int index = (Mathf.RoundToInt(trap.position.y) * Width) + Mathf.RoundToInt(trap.position.x);
 			boardPieces.Add(index, trap.gameObject);
 		}
-		MouseSpawner[] spawners = transform.parent.GetComponentsInChildren<MouseSpawner>();
+		MouseSpawner[] spawners = gameArea.GetComponentsInChildren<MouseSpawner>();
 		foreach (MouseSpawner spawner in spawners)
 		{
 			int index = (Mathf.RoundToInt(spawner.position.y) * Width) + Mathf.RoundToInt(spawner.position.x);
@@ -91,7 +96,7 @@ public class Board : MonoBehaviour {
 	{
 		if (mouseCount >= mouseLimit)
 			return;
-		GameObject mouse = Instantiate(mousePrefab, transform.parent);
+		GameObject mouse = Instantiate(mousePrefab, gameArea);
 		mouse.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 		mouse.GetComponent<Mouse>().direction = direction;
 		mouseCount++;
@@ -136,7 +141,7 @@ public class Board : MonoBehaviour {
 		//detect mouse position on board
 		Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		worldPoint.z = 0f;
-		Vector3 boardPoint = transform.parent.InverseTransformPoint(worldPoint);
+		Vector3 boardPoint = gameArea.InverseTransformPoint(worldPoint);
 
 		//find what square this point is on
 		int x = Mathf.FloorToInt(boardPoint.x);
@@ -150,7 +155,7 @@ public class Board : MonoBehaviour {
 			if (Input.GetKey(KeyCode.W))
 			{
 				//place an up arrow
-				GameObject arrow = Instantiate(arrowPrefab, transform.parent);
+				GameObject arrow = Instantiate(arrowPrefab, gameArea);
 				arrow.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 				arrow.GetComponent<Arrow>().direction = Direction.Up;
 				int index = (y * (Width)) + x;
@@ -166,7 +171,7 @@ public class Board : MonoBehaviour {
 	void MoveSelector(int x, int y)
 	{
 		if (selector == null)
-			selector = Instantiate(selectorPrefab, transform.parent);
+			selector = Instantiate(selectorPrefab, gameArea);
 		selector.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 	}
 
