@@ -15,7 +15,6 @@ public class MouseSpawner : MonoBehaviour {
 
 	void Awake()
 	{
-		controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		//Make sure we're centered
 		position = new Vector3(Mathf.Round(transform.localPosition.x), Mathf.Round(transform.localPosition.y), 0f);
 		transform.localPosition = position;
