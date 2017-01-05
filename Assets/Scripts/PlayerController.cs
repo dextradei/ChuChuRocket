@@ -7,36 +7,57 @@ public class PlayerController : MonoBehaviour {
 	public GameObject selectorPrefab;
 	public GameObject arrowPrefab;
 
-	private GameController controller;
+	public int maxArrows = 3;
+
+	private GameObject selector;
+	private GameObject[] arrows;
+	private int arrowIndex;
+
+	protected GameController controller;
+
+	private Transform gameArea;
 
 	void Start () {
 		controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		gameArea = GameObject.FindGameObjectWithTag("GameArea").transform;
+		arrows = new GameObject[maxArrows];
+		for(int i = 0; i < maxArrows; i++)
+		{
+			arrows[i] = null;
+		}
+		arrowIndex = 0;
+	}
+	
+	protected void MoveSelector(int x, int y)
+	{
+		if (selector == null)
+			selector = Instantiate(selectorPrefab, gameArea);
+		selector.transform.localPosition = new Vector3((float)x, (float)y, 0f);
 	}
 
-	// Update is called once per frame
-	void Update()
+	protected void RemoveSelector()
 	{
-		//detect mouse position in gameArea
-		Vector3 gameAreaPoint = controller.GetMouseGameAreaPoint();
-
-		//find what square this point is on
-		int x = Mathf.FloorToInt(gameAreaPoint.x);
-		int y = Mathf.FloorToInt(gameAreaPoint.y);
-
-		//if it's a valid place to put an arrow, put the selector box there
-		if (controller.OnBoard(x, y) && (controller.GetPiece(x, y) == null))
+		if (selector != null)
 		{
-			controller.MoveSelector(selectorPrefab, x, y);
-			//TODO: fix project input settings and use Axes instead of GetKey
-			if (Input.GetKey(KeyCode.W))
-			{
-				//place an up arrow
-				controller.PlaceArrow(arrowPrefab, x, y);
-			}
+			Destroy(selector);
+			selector = null;
 		}
-		else
+	}
+
+	protected void PlaceArrow(int x, int y, Direction dir)
+	{
+		GameObject arrow = Instantiate(arrowPrefab, gameArea);
+		arrow.transform.localPosition = new Vector3((float)x, (float)y, 0f);
+		arrow.GetComponent<Arrow>().direction = dir;
+		controller.AddPiece(arrow, x, y);
+		if (arrows[arrowIndex] != null)
 		{
-			controller.RemoveSelector();
+			Destroy(arrows[arrowIndex]);
+			controller.RemovePiece(arrows[arrowIndex]);
 		}
+		arrows[arrowIndex] = arrow;
+		arrowIndex++;
+		if (arrowIndex >= maxArrows)
+			arrowIndex = 0;
 	}
 }

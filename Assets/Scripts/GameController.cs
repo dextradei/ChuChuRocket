@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 
-	private GameObject selector = null;
-
 	public GameObject mousePrefab;
 	
 	//maximum number of mice before AddMouse() will stop adding and become a no-op
@@ -44,37 +42,10 @@ public class GameController : MonoBehaviour {
 		return board.CanGo(x, y, direction);
 	}
 
-	public Vector3 GetMouseGameAreaPoint()
+	public Vector3 GetWorldGameAreaPoint(Vector3 worldPoint)
 	{
-		Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		worldPoint.z = 0f;
 		Vector3 gameAreaPoint = gameArea.InverseTransformPoint(worldPoint);
 		return gameAreaPoint;
-	}
-
-	public void MoveSelector(GameObject selectorPrefab, int x, int y)
-	{
-		if (selector == null)
-			selector = Instantiate(selectorPrefab, gameArea);
-		selector.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-	}
-
-	public void RemoveSelector()
-	{
-		if (selector != null)
-		{
-			Destroy(selector);
-			selector = null;
-		}
-	}
-
-	public void PlaceArrow(GameObject arrowPrefab, int x, int y)
-	{
-		GameObject arrow = Instantiate(arrowPrefab, gameArea);
-		arrow.transform.localPosition = new Vector3((float)x, (float)y, 0f);
-		arrow.GetComponent<Arrow>().direction = Direction.Up;
-		int index = board.GetIndex(x, y);
-		gamePieces.Add(index, arrow);
 	}
 
 	public bool OnBoard(int x, int y)
@@ -90,6 +61,30 @@ public class GameController : MonoBehaviour {
 		if (!gamePieces.TryGetValue(index, out ret))
 			ret = null;
 		return ret;
+	}
+
+	public void AddPiece(GameObject obj, int x, int y)
+	{
+		int index = board.GetIndex(x, y);
+		gamePieces.Add(index, obj);
+	}
+
+	public void RemovePiece(int x, int y)
+	{
+		int index = board.GetIndex(x, y);
+		gamePieces.Remove(index);
+	}
+
+	public void RemovePiece(GameObject go)
+	{
+		foreach (KeyValuePair<int, GameObject> p in gamePieces)
+		{
+			if (p.Value == go)
+			{
+				gamePieces.Remove(p.Key);
+				break;
+			}
+		}
 	}
 
 	//Create a mouse at (x,y) that moves direction

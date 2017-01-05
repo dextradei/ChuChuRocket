@@ -7,7 +7,6 @@ public class Arrow : MonoBehaviour {
 	public Direction direction = Direction.Up;
 	public GameObject arrowImage;
 
-	// Use this for initialization
 	void Start () {
 		SetRotation();
 	}
