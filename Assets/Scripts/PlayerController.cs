@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+	public GameObject cursorPrefab;
 	public GameObject selectorPrefab;
 	public GameObject arrowPrefab;
 
 	public int maxArrows = 3;
 
+	protected GameObject cursor;
 	private GameObject selector;
 	private GameObject[] arrows;
 	private int arrowIndex;
@@ -18,14 +20,40 @@ public class PlayerController : MonoBehaviour {
 	private Transform gameArea;
 
 	void Start () {
+		Init();
+	}
+
+	protected void Init()
+	{
 		controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		gameArea = GameObject.FindGameObjectWithTag("GameArea").transform;
 		arrows = new GameObject[maxArrows];
-		for(int i = 0; i < maxArrows; i++)
+		cursor = Instantiate(cursorPrefab, gameArea);
+		for (int i = 0; i < maxArrows; i++)
 		{
 			arrows[i] = null;
 		}
 		arrowIndex = 0;
+	}
+
+	protected void MoveCursor(Vector3 p)
+	{
+		//confine cursor to screen
+		if (!Camera.main.rect.Contains(Camera.main.WorldToViewportPoint(p)))
+		{
+			Vector3 bl = Camera.main.ViewportToWorldPoint(new Vector3(Camera.main.rect.xMin, Camera.main.rect.yMin, 0f));
+			Vector3 tr = Camera.main.ViewportToWorldPoint(new Vector3(Camera.main.rect.xMax, Camera.main.rect.yMax, 0f));
+			if (p.x < bl.x)
+				p.x = bl.x;
+			else if (cursor.transform.position.x > tr.x)
+				p.x = tr.x;
+			if (p.y < bl.y)
+				p.y = bl.y;
+			else if (p.y > tr.y)
+				p.y = tr.y;
+		}
+		p.z = 0f;
+		cursor.transform.position = p;
 	}
 	
 	protected void MoveSelector(int x, int y)

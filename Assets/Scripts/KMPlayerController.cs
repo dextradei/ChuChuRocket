@@ -18,19 +18,19 @@ public class KMPlayerController : PlayerController {
 		if (controller.OnBoard(x, y) && (controller.GetPiece(x, y) == null))
 		{
 			MoveSelector(x, y);
-			if (Input.GetKey(KeyCode.W))
+			if (Input.GetKeyDown(KeyCode.W))
 			{
 				PlaceArrow(x, y, Direction.Up);
 			}
-			else if (Input.GetKey(KeyCode.A))
+			else if (Input.GetKeyDown(KeyCode.A))
 			{
 				PlaceArrow(x, y, Direction.Left);
 			}
-			else if (Input.GetKey(KeyCode.S))
+			else if (Input.GetKeyDown(KeyCode.S))
 			{
 				PlaceArrow(x, y, Direction.Down);
 			}
-			else if (Input.GetKey(KeyCode.D))
+			else if (Input.GetKeyDown(KeyCode.D))
 			{
 				PlaceArrow(x, y, Direction.Right);
 			}
