@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MouseTrap : MonoBehaviour {
 
+	public GameObject player;
+
 	[System.NonSerialized]
 	public Vector3 position;
 

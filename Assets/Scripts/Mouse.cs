@@ -50,8 +50,8 @@ public class Mouse : MonoBehaviour {
 				MouseTrap trap = piece.GetComponent<MouseTrap>();
 				if (trap != null)
 				{
-					//TODO: figure out which player owns the trap and update score
 					controller.RemoveMouse(gameObject);
+					trap.player.GetComponent<PlayerController>().AddScore(1);
 					return;
 				}
 				Arrow arrow = piece.GetComponent<Arrow>();

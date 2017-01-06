@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
 	public GameObject cursorPrefab;
 	public GameObject selectorPrefab;
 	public GameObject arrowPrefab;
+	public GameObject scoreBoard;
 
 	public int maxArrows = 3;
 
@@ -16,6 +18,9 @@ public class PlayerController : MonoBehaviour {
 	private int arrowIndex;
 
 	protected GameController controller;
+
+	[System.NonSerialized]
+	public int score = 0;
 
 	private Transform gameArea;
 
@@ -88,5 +93,11 @@ public class PlayerController : MonoBehaviour {
 		arrowIndex++;
 		if (arrowIndex >= maxArrows)
 			arrowIndex = 0;
+	}
+
+	public void AddScore(int points)
+	{
+		score += points;
+		scoreBoard.GetComponent<Text>().text = score.ToString();
 	}
 }
