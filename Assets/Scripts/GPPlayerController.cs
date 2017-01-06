@@ -14,8 +14,11 @@ public class GPPlayerController : PlayerController {
 		//Move the cursor
 		float vx = Input.GetAxis("C1.MoveCursorHorizontal");
 		float vy = Input.GetAxis("C1.MoveCursorVertical");
-		Vector3 p = cursor.transform.position + new Vector3(vx, vy, 0) * Time.deltaTime * cursorVelocity;
-		MoveCursor(p);
+		Vector3 move = new Vector3(vx, vy, 0) * Time.deltaTime * cursorVelocity;
+		//double speed
+		if (Input.GetButton("C1.MoveFast"))
+			move *= 2f;
+		MoveCursor(move);
 
 		//find what square the cursor is on
 		int x = Mathf.FloorToInt(cursor.transform.localPosition.x);

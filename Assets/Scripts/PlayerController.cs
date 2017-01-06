@@ -36,24 +36,25 @@ public class PlayerController : MonoBehaviour {
 		arrowIndex = 0;
 	}
 
-	protected void MoveCursor(Vector3 p)
+	protected void MoveCursor(Vector3 move)
 	{
+		Vector3 newPosition = cursor.transform.position + move;
 		//confine cursor to screen
-		if (!Camera.main.rect.Contains(Camera.main.WorldToViewportPoint(p)))
+		if (!Camera.main.rect.Contains(Camera.main.WorldToViewportPoint(newPosition)))
 		{
 			Vector3 bl = Camera.main.ViewportToWorldPoint(new Vector3(Camera.main.rect.xMin, Camera.main.rect.yMin, 0f));
 			Vector3 tr = Camera.main.ViewportToWorldPoint(new Vector3(Camera.main.rect.xMax, Camera.main.rect.yMax, 0f));
-			if (p.x < bl.x)
-				p.x = bl.x;
+			if (newPosition.x < bl.x)
+				newPosition.x = bl.x;
 			else if (cursor.transform.position.x > tr.x)
-				p.x = tr.x;
-			if (p.y < bl.y)
-				p.y = bl.y;
-			else if (p.y > tr.y)
-				p.y = tr.y;
+				newPosition.x = tr.x;
+			if (newPosition.y < bl.y)
+				newPosition.y = bl.y;
+			else if (newPosition.y > tr.y)
+				newPosition.y = tr.y;
 		}
-		p.z = 0f;
-		cursor.transform.position = p;
+		newPosition.z = 0f;
+		cursor.transform.position = newPosition;
 	}
 	
 	protected void MoveSelector(int x, int y)
