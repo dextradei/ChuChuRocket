@@ -8,7 +8,6 @@ public class SplashController : MonoBehaviour {
 	}
 
 	void Update () {
-		this.NextScene ();
 	}
 
 	void NextScene () {
